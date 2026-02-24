@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda - Soundboxd</title>
+    <style>
+        body { background-color: #0f0f0f; color: white; font-family: Arial, sans-serif; padding: 40px; margin: 0; }
+        h1 { text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 40px auto; }
+        .card { background: #1c1c1c; padding: 15px; border-radius: 10px; text-align: center; transition: transform 0.2s; }
+        .card:hover { transform: scale(1.05); }
+        .card img { width: 100%; border-radius: 8px; aspect-ratio: 1/1; object-fit: cover; }
+        .type-album { border-top: 4px solid #1db954; }
+        .type-track { border-top: 4px solid #81e88d; }
+        .no-results { text-align: center; font-size: 20px; color: #aaa; margin-top: 60px; }
+        .spotify-link { color: #1db954; text-decoration: none; font-size: 0.9em; }
+        .spotify-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>Resultados para "{{ query }}"</h1>
+ <div style="text-align:center; margin: 20px 0;">
+    <a href="?q={{ query }}&type=all" 
+       style="color: {% if filter_type == 'all' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
+        Todo
+    </a>
+    <a href="?q={{ query }}&type=album" 
+       style="color: {% if filter_type == 'album' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
+        Álbumes
+    </a>
+    <a href="?q={{ query }}&type=track" 
+       style="color: {% if filter_type == 'track' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
+        Canciones
+    </a>
+</div>
+
+    {% if type == 'error' %}
+        <p style="text-align:center; color:#ff5555;">{{ error_msg }}</p>
+    {% elif results %}
+        <p>Encontramos {{ count }} resultado{% if count != 1 %}s{% endif %} en Spotify</p>
+        <div class="grid">
+            {% for item in results %}
+                <div class="card {% if item.type == 'album' %}type-album{% else %}type-track{% endif %}">
+                    {% if item.image %}
+                        <img src="{{ item.image }}" alt="{{ item.name }}">
+                    {% else %}
+                        <div style="height:200px; background:#333; display:flex; align-items:center; justify-content:center;">
+                            Sin portada
+                        </div>
+                    {% endif %}
+                    
+                    <h3>{{ item.name }}</h3>
+                    <p>{{ item.artist }}</p>
+                    
+                    {% if item.type == 'album' and item.release_date %}
+                        <p style="color:#aaa; font-size:0.9em;">{{ item.release_date|slice:":4" }}</p>
+                    {% elif item.type == 'track' %}
+                        <p style="color:#aaa; font-size:0.9em;">{{ item.album }}</p>
+                    {% endif %}
+                    
+                    {% if item.spotify_url %}
+                        <a href="{{ item.spotify_url }}" target="_blank" class="spotify-link">Abrir en Spotify</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            No encontramos resultados para "<strong>{{ query }}</strong>".<br><br>
+            Probá con otro término o <a href="/" style="color: #1db954; font-weight: bold;">volver al inicio</a>.
+        </div>
+    {% endif %}
+
+</body>
+</html>
