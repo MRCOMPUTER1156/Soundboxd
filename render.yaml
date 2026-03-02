@@ -2,7 +2,7 @@ services:
   - type: web
     name: youtube-rating-app
     env: python
-    buildCommand: "cd musicrate && pip install -r requirements.txt"
+    buildCommand: "cd musicrate && pip install -r requirements.txt && python manage.py collectstatic --noinput"
     startCommand: "cd musicrate && gunicorn musicrate.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
