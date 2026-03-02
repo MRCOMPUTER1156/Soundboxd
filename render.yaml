@@ -6,4 +6,4 @@ services:
     startCommand: "gunicorn musicrate.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.9
