@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Iniciar sesión - Soundboxd</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+<body>
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="brand"><span class="logo">▶</span> Soundboxd</a>
+        <div class="auth-links">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+            <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
+        </div>
+    </div>
+    <div class="container narrow">
+        <h1>Iniciar sesión</h1>
+        {% if form.non_field_errors %}
+            <div class="errorlist">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="id_username">Usuario:</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="errorlist">{{ form.username.errors }}</div>{% endif %}
+            </div>
+            <div>
+                <label for="id_password">Contraseña:</label>
+                {{ form.password }}
+                {% if form.password.errors %}<div class="errorlist">{{ form.password.errors }}</div>{% endif %}
+            </div>
+            <button type="submit">Iniciar sesión</button>
+        </form>
+        <p style="text-align:center; margin-top:20px;">¿No tenés cuenta? <a href="{% url 'signup' %}">Registrate aquí</a></p>
+    </div>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

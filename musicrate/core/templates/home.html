@@ -4,135 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soundboxd</title>
-    <style>
-        body {
-            background-color: #0f0f0f;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Contenedor principal centrado */
-        .main-content {
-            text-align: center;
-            padding: 100px 20px;
-        }
-
-        h1 {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 20px;
-            color: #aaa;
-            margin-bottom: 40px;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 15px 30px;
-            background-color: #1db954;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 18px;
-            margin: 0 10px;
-            transition: all 0.2s ease;
-        }
-
-        .button.spotify {
-            background-color: #1ed760;
-        }
-
-        .button:hover,
-        .button.spotify:hover {
-            background-color: #17a74a;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-            transform: translateY(-3px);
-        }
-
-        /* Buscador en la esquina superior derecha */
-        .search-container {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-        }
-
-        .search-form {
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            padding: 10px 15px;
-            width: 220px;
-            border: none;
-            border-radius: 20px 0 0 20px;
-            font-size: 16px;
-            background-color: #282828;
-            color: white;
-        }
-
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #1db954;
-        }
-
-        .search-button {
-            padding: 10px 15px;
-            background-color: #1db954;
-            border: none;
-            border-radius: 0 20px 20px 0;
-            cursor: pointer;
-            color: white;
-            font-size: 16px;
-        }
-
-        .search-button:hover {
-            background-color: #17a74a;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-    <!-- Buscador arriba a la derecha -->
-    <div class="search-container">
+    <div class="topbar">
+        <div class="brand"><span class="logo">▶</span> Soundboxd</div>
         <form action="{% url 'search' %}" method="get" class="search-form">
-            <input type="text" name="q" class="search-input" placeholder="Buscar álbumes, artistas..." required>
-            <button type="submit" class="search-button">🔍</button>
+            <input type="text" name="q" class="search-input" placeholder="Buscar videos en YouTube" required>
+            <button type="submit" class="search-button">Buscar</button>
         </form>
-    </div>
-
-    <!-- Contenido principal -->
-    <div class="main-content">
-        <h1>🎧 Soundboxd</h1>
-        <p style="font-size: 14px; color: #aaa;">
-    Debug: Token en sesión = {{ request.session.spotify_access_token|default:"NO HAY TOKEN" }}
-</p>
-<p>Debug cookie: {{ request.COOKIES.spotify_token_debug|default:"NO COOKIE" }}</p>
-        <p>Descubrí, calificá y compartí tus álbumes favoritos.</p>
-
-        <div style="margin-top: 40px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-            <a href="/albums/" class="button">Explorar Álbumes</a>
-
-            {% if request.session.spotify_access_token %}
-                <a href="/spotify_logout/" class="button" style="background-color: #ff5555;">
-                    Desconectar Spotify
-                </a>
+        <div class="auth-links">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" style="margin:0; display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Cerrar sesión</button>
+                </form>
             {% else %}
-                <a href="/login/" class="button spotify">Conectar con Spotify</a>
+                <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
+                <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
             {% endif %}
         </div>
-
-        <!-- Mensaje extra si estás conectado (opcional, más visible) -->
-        {% if request.session.spotify_access_token %}
-            <p style="margin-top: 30px; font-size: 16px; color: #aaa; text-align: center;">
-                Estás conectado a Spotify.
-            </p>
-        {% endif %}
     </div>
 
+    <div class="main-content">
+        <h1>Descubrí videos y creadores</h1>
+        <p>Busca videos en YouTube y ordénalos por popularidad.</p>
+    </div>
+
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -104,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -118,11 +119,21 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-SPOTIFY_CLIENT_ID = "0d519bd82b6842199435687a71b0be18"
-SPOTIFY_CLIENT_SECRET = "17d6809be80443fd8bdf15af6659929b"
-SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/callback/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'core', 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# YouTube Data API key (set via environment variable in production)
+YOUTUBE_API_KEY = ('AIzaSyAUi4yokCxtMfakemNSmqHg3tX6M7H8DX4')
+
+# redirecciones de autenticación
+LOGIN_REDIRECT_URL = '/'  # después de iniciar sesión
+LOGOUT_REDIRECT_URL = '/'  # después de cerrar sesión
+
 SESSION_COOKIE_AGE = 86400  # 2 semanas
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = False  # en local debe ser False (True solo con HTTPS)
-SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_HTTPONLY = True  # proteger de acceso JavaScript
+SESSION_COOKIE_SAMESITE = 'Lax'  # para desarrollo local

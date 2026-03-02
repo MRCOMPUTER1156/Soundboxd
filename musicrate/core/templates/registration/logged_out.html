@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sesión cerrada - Soundboxd</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .container { max-width:600px; margin:60px auto; padding:40px; text-align:center }
+        h1 { font-size:32px; color:#111 }
+        p { font-size:16px; color:#666 }
+        .cta { margin-top:20px }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="brand"><span class="logo">▶</span> Soundboxd</a>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+    </div>
+    <div class="container">
+        <h1>✓ Sesión cerrada</h1>
+        <p>Tu sesión se ha cerrado correctamente.</p>
+        <div class="cta">
+            <a href="{% url 'login' %}">Iniciar sesión de nuevo</a>
+        </div>
+    </div>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

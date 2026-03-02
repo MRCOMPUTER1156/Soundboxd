@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Crear cuenta - Soundboxd</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="brand"><span class="logo">▶</span> Soundboxd</a>
+        <div class="auth-links">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+            <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
+        </div>
+    </div>
+    <div class="container narrow">
+        <h1>Crear cuenta</h1>
+        {% if form.non_field_errors %}
+            <div class="errorlist">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="id_username">Usuario:</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="errorlist">{{ form.username.errors }}</div>{% endif %}
+                {% if form.username.help_text %}<span class="helptext">{{ form.username.help_text|safe }}</span>{% endif %}
+            </div>
+            <div>
+                <label for="id_password1">Contraseña:</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}<div class="errorlist">{{ form.password1.errors }}</div>{% endif %}
+                {% if form.password1.help_text %}<span class="helptext">{{ form.password1.help_text|safe }}</span>{% endif %}
+            </div>
+            <div>
+                <label for="id_password2">Confirmar contraseña:</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}<div class="errorlist">{{ form.password2.errors }}</div>{% endif %}
+                {% if form.password2.help_text %}<span class="helptext">{{ form.password2.help_text|safe }}</span>{% endif %}
+            </div>
+            <button type="submit">Crear cuenta</button>
+        </form>
+        <p style="text-align:center; margin-top:20px;">¿Ya tenés cuenta? <a href="{% url 'login' %}">Iniciar sesión</a></p>
+    </div>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

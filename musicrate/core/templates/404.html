@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Página no encontrada - Soundboxd</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .container { max-width:600px; margin:60px auto; padding:40px; text-align:center }
+        h1 { font-size:48px; margin-bottom:16px; }
+        p { font-size:18px; margin-bottom:24px; color:#666 }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/" class="brand"><span class="logo">▶</span> Soundboxd</a>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+    </div>
+    <div class="container">
+        <h1>404 - No Encontrado</h1>
+        <p>Lo sentimos, la página que buscás no existe.</p>
+        <div class="cta">
+            <a href="/">Volver al inicio</a>
+        </div>
+    </div>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

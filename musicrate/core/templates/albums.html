@@ -1,57 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Álbumes - Soundboxd</title>
-    <style>
-        body {
-            background-color: #0f0f0f;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 40px;
-        }
+    <title>Listas - Soundboxd</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: #1c1c1c;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .card img {
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        .card h3 {
-            margin: 10px 0 5px 0;
-        }
-
-        .card p {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        a {
-            color: #1db954;
-            text-decoration: none;
-        }
-    </style>
 </head>
 <body>
 
-<h1>Álbumes</h1>
-<p>Debug: Cantidad de álbumes recibidos: {{ albums|length }}</p>
+<div class="topbar">
+    <a href="{% url 'home' %}" class="brand"><span class="logo">▶</span> Soundboxd</a>
+    <form action="{% url 'search' %}" method="get" class="search-form">
+        <input type="text" name="q" class="search-input" placeholder="Buscar videos en YouTube" required>
+        <button type="submit" class="search-button">Buscar</button>
+    </form>
+    <div class="auth-links">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" style="margin:0; display:inline">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Cerrar sesión</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
+            <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+<h1>Listas guardadas</h1>
+{% if from_callback %}
+    <div style="margin-bottom:14px;">
+        <a href="{% url 'home' %}" class="btn">Volver al inicio</a>
+    </div>
+{% endif %}
+<p class="muted">Cantidad de álbumes/listas: {{ albums|length }}</p>
 
 <div class="grid">
     {% for album in albums %}
@@ -59,13 +43,17 @@
             {% if album.cover_url %}
                 <img src="{{ album.cover_url }}" alt="{{ album.title }}">
             {% endif %}
-            <h3>{{ album.title }}</h3>
-            <p>{{ album.artist.name }} ({{ album.release_year }})</p>
+            <div class="body">
+                <h3>{{ album.title }}</h3>
+                <p class="muted">{{ album.artist.name }} • {{ album.release_year }}</p>
+            </div>
         </div>
     {% empty %}
         <p>No hay álbumes todavía.</p>
     {% endfor %}
 </div>
+</div>
 
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>

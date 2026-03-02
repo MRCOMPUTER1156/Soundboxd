@@ -1,77 +1,113 @@
 <!DOCTYPE html>
+{% load format_filters %}
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Búsqueda - Soundboxd</title>
-    <style>
-        body { background-color: #0f0f0f; color: white; font-family: Arial, sans-serif; padding: 40px; margin: 0; }
-        h1 { text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 40px auto; }
-        .card { background: #1c1c1c; padding: 15px; border-radius: 10px; text-align: center; transition: transform 0.2s; }
-        .card:hover { transform: scale(1.05); }
-        .card img { width: 100%; border-radius: 8px; aspect-ratio: 1/1; object-fit: cover; }
-        .type-album { border-top: 4px solid #1db954; }
-        .type-track { border-top: 4px solid #81e88d; }
-        .no-results { text-align: center; font-size: 20px; color: #aaa; margin-top: 60px; }
-        .spotify-link { color: #1db954; text-decoration: none; font-size: 0.9em; }
-        .spotify-link:hover { text-decoration: underline; }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
 </head>
 <body>
-
-    <h1>Resultados para "{{ query }}"</h1>
- <div style="text-align:center; margin: 20px 0;">
-    <a href="?q={{ query }}&type=all" 
-       style="color: {% if filter_type == 'all' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
-        Todo
-    </a>
-    <a href="?q={{ query }}&type=album" 
-       style="color: {% if filter_type == 'album' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
-        Álbumes
-    </a>
-    <a href="?q={{ query }}&type=track" 
-       style="color: {% if filter_type == 'track' %}#1db954; font-weight:bold{% else %}#aaa{% endif %}; margin: 0 20px; text-decoration:none;">
-        Canciones
-    </a>
-</div>
+    <div class="topbar">
+        <a href="{% url 'home' %}" class="brand"><span class="logo">▶</span> Soundboxd</a>
+        <form action="{% url 'search' %}" method="get" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Buscar videos en YouTube" value="{{ query }}" required>
+            <button type="submit" class="search-button">Buscar</button>
+        </form>
+        <div class="auth-links">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" style="margin:0; display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
+                <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
+            {% endif %}
+        </div>
+    </div>
 
     {% if type == 'error' %}
-        <p style="text-align:center; color:#ff5555;">{{ error_msg }}</p>
+        <p class="error-msg">{{ error_msg }}</p>
     {% elif results %}
-        <p>Encontramos {{ count }} resultado{% if count != 1 %}s{% endif %} en Spotify</p>
-        <div class="grid">
+        <div class="container">
+            <div class="results-header">
+                <h1>Resultados para "{{ query }}"</h1>
+                <div class="muted">{{ count }} resultado{% if count != 1 %}s{% endif %}</div>
+            </div>
+
+            <div class="filters">
+                <!-- filtros antiguos removidos -->
+            </div>
+
+            <div class="list">
             {% for item in results %}
-                <div class="card {% if item.type == 'album' %}type-album{% else %}type-track{% endif %}">
-                    {% if item.image %}
-                        <img src="{{ item.image }}" alt="{{ item.name }}">
-                    {% else %}
-                        <div style="height:200px; background:#333; display:flex; align-items:center; justify-content:center;">
-                            Sin portada
+                <div class="row">
+                    <div class="thumb">
+                        {% if item.image %}
+                            <img src="{{ item.image }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div class="no-image">No imagen</div>
+                        {% endif %}
+                    </div>
+                    <div class="meta">
+                        <h3>{{ item.name }}</h3>
+                        <p class="muted">{{ item.artist }}</p>
+                        <div class="info">
+                            <div class="muted">{{ item.views|default:0|format_number }} vistas</div>
+                            {% if item.youtube_url %}
+                                <a href="{{ item.youtube_url }}" target="_blank" class="button-y">Ver en YouTube</a>
+                            {% endif %}
+
+                            {% if item.video_id %}
+                                <div style="margin-left:12px;">
+                                    <span class="muted">Valoración: </span>
+                                    {% if item.avg_rating %}
+                                        <strong>{{ item.avg_rating }}/5</strong>
+                                    {% else %}
+                                        <span class="muted">sin calificar</span>
+                                    {% endif %}
+                                </div>
+
+                                <div style="margin-left:12px;">
+                                    {% if user.is_authenticated %}
+                                        <form class="rate-form" method="post" action="{% url 'rate' %}" data-video-id="{{ item.video_id }}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="video_id" value="{{ item.video_id }}">
+                                            <input type="hidden" name="title" value="{{ item.name }}">
+                                            <input type="hidden" name="channel" value="{{ item.artist }}">
+                                            <input type="hidden" name="thumbnail" value="{{ item.image }}">
+                                            <label>
+                                                <select name="rating">
+                                                    <option value="">--</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
+                                            </label>
+                                            <button type="submit" class="button-y">Calificar</button>
+                                        </form>
+                                    {% else %}
+                                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="rate-link">Inicia sesión para calificar</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    
-                    <h3>{{ item.name }}</h3>
-                    <p>{{ item.artist }}</p>
-                    
-                    {% if item.type == 'album' and item.release_date %}
-                        <p style="color:#aaa; font-size:0.9em;">{{ item.release_date|slice:":4" }}</p>
-                    {% elif item.type == 'track' %}
-                        <p style="color:#aaa; font-size:0.9em;">{{ item.album }}</p>
-                    {% endif %}
-                    
-                    {% if item.spotify_url %}
-                        <a href="{{ item.spotify_url }}" target="_blank" class="spotify-link">Abrir en Spotify</a>
-                    {% endif %}
+                    </div>
                 </div>
             {% endfor %}
+            </div>
         </div>
-    {% else %}
         <div class="no-results">
-            No encontramos resultados para "<strong>{{ query }}</strong>".<br><br>
-            Probá con otro término o <a href="/" style="color: #1db954; font-weight: bold;">volver al inicio</a>.
+            <p>No encontramos resultados para "<strong>{{ query }}</strong>".</p>
+            <p class="muted">Probá con otro término o <a href="/" style="font-weight:bold">volver al inicio</a>.</p>
         </div>
     {% endif %}
-
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>
