@@ -82,6 +82,12 @@ DATABASES = {
     }
 }
 
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    ...
+]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -120,7 +126,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'core', 'static'),
+    os.path.join(BASE_DIR, 'videos/static'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -137,3 +143,4 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = False  # en local debe ser False (True solo con HTTPS)
 SESSION_COOKIE_HTTPONLY = True  # proteger de acceso JavaScript
 SESSION_COOKIE_SAMESITE = 'Lax'  # para desarrollo local
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
