@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+
+<body>
+
+<div class="perfil-page">
+    <a href="{% url 'home' %}" class="back-button">
+    ←
+</a>
+    <h1>Mi Perfil</h1>
+
+    <div class="profile-header">
+
+        <div class="photo-section">
+            <form method="POST" enctype="multipart/form-data" class="profile-form">
+                {% csrf_token %}
+
+                <input type="file" name="image" id="id_image" class="hidden">
+
+                <label for="id_image" class="profile-pic">
+                    <img src="{{ profile.image.url }}" width="120" height="120">
+                </label>
+
+                <button type="submit" id="saveBtn" class="hidden save-btn">
+                    Guardar
+                </button>
+            </form>
+        </div>
+
+        <div class="user-info">
+            <h2>{{ user.username }}</h2>
+            <p>{{ user.email }}</p>
+        </div>
+
+    </div>
+
+    <h2>Mis Calificaciones</h2>
+
+    {% if ratings %}
+        <div class="cards-container">
+            {% for r in ratings %}
+                <div class="card">
+                    <img src="{{ r.video.thumbnail }}" alt="{{ r.video.title }}">
+
+                    <div class="card-content">
+                        <h3>{{ r.video.title }}</h3>
+                        <p class="channel">{{ r.video.channel }}</p>
+                        <p class="rating">⭐ {{ r.rating }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No calificaste nada todavía.</p>
+    {% endif %}
+
+    <div class="logout-container">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    </div>
+
+    {% if promedio %}
+        <p>Promedio de mis calificaciones: ⭐ {{ promedio }}</p>
+    {% endif %}
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("id_image");
+    const button = document.getElementById("saveBtn");
+
+    input.addEventListener("change", function () {
+        if (input.files.length > 0) {
+            button.classList.remove("hidden");
+        }
+    });
+});
+</script>
+
+</body>
+</html>

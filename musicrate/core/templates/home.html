@@ -16,17 +16,19 @@
             <button type="submit" class="search-button">Buscar</button>
         </form>
         <div class="auth-links">
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"><span class="knob"></span></button>
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" style="margin:0; display:inline">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-btn">Cerrar sesión</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
-                <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
-            {% endif %}
-        </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="knob">
+            </span>
+            </button>
+              {% if user.is_authenticated %}
+        <a href="{% url 'perfil' %}" class="profile-button">
+            <img src="{{ user.profile.image.url }}" alt="Perfil">
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>
+        <a href="{% url 'signup' %}" class="auth-link">Crear cuenta</a>
+    {% endif %}
+</div>
     </div>
 
     <div class="main-content">

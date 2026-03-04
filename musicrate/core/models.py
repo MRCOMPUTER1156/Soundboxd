@@ -51,3 +51,15 @@ class Rating(models.Model):
 
     class Meta:
         unique_together = ('user', 'video')
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='profile_pics/', default='default.png')
+
+    def __str__(self):
+        return f'Perfil de {self.user.username}'
+
+image = models.ImageField(
+    upload_to='profile_pics/',
+    default='profile_pics/default.png'
+)

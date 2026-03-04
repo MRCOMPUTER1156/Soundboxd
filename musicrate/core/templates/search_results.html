@@ -21,7 +21,7 @@
             {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}" style="margin:0; display:inline">
                     {% csrf_token %}
-                    <button type="submit" class="logout-btn">Cerrar sesión</button>
+                    
                 </form>
             {% else %}
                 <a href="{% url 'login' %}" class="auth-link">Iniciar sesión</a>

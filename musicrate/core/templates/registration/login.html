@@ -41,5 +41,12 @@
         <p style="text-align:center; margin-top:20px;">¿No tenés cuenta? <a href="{% url 'signup' %}">Registrate aquí</a></p>
     </div>
     <script src="{% static 'core/js/theme.js' %}"></script>
+    {% if user.is_authenticated %}
+    <a href="{% url 'perfil' %}">Perfil</a>
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+{% else %}
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}">Registrarse</a>
+{% endif %}
 </body>
 </html>

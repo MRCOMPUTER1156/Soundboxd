@@ -6,8 +6,9 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from datetime import datetime
-
-
+from django.db.models import Avg
+from .forms import ProfileForm
+from .models import Rating, Profile
 # ==========================
 # DJANGO VIEWS (YouTube)
 # ==========================
@@ -183,3 +184,28 @@ def rate_video(request):
     from django.db.models import Avg
     avg = Rating.objects.filter(video=video_obj).aggregate(Avg('rating'))['rating__avg']
     return JsonResponse({'ok': True, 'avg': round(avg, 2) if avg is not None else None})
+
+
+@login_required
+def perfil(request):
+    # Obtener o crear perfil (EVITA EL ERROR)
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    # Parte de ratings
+    ratings = Rating.objects.filter(user=request.user).select_related('video')
+    promedio = ratings.aggregate(Avg('rating'))['rating__avg']
+
+    # Parte de formulario
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'core/perfil.html', {
+        'ratings': ratings,
+        'promedio': round(promedio, 2) if promedio else None,
+        'form': form,
+        'profile': profile
+    })
