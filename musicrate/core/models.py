@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -54,10 +55,20 @@ class Rating(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='profile_pics/', default='default.png')
+    image = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.png')
 
-    def __str__(self):
-        return f'Perfil de {self.user.username}'
+    def save(self, *args, **kwargs):
+        try:
+            old_image = Profile.objects.get(pk=self.pk).image
+        except Profile.DoesNotExist:
+            old_image = None
+
+        super().save(*args, **kwargs)
+
+        if old_image and old_image != self.image:
+            if old_image.path and os.path.isfile(old_image.path):
+                if "default.png" not in old_image.path:
+                    os.remove(old_image.path)
 
 image = models.ImageField(
     upload_to='profile_pics/',

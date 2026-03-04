@@ -63,17 +63,20 @@
                             {% endif %}
 
                             {% if item.video_id %}
-                                <div style="margin-left:12px;">
-                                    <span class="muted">Valoración: </span>
-                                    {% if item.avg_rating %}
-                                        <strong>{{ item.avg_rating }}/5</strong>
-                                    {% else %}
-                                        <span class="muted">sin calificar</span>
-                                    {% endif %}
-                                </div>
+                               <div style="margin-left:12px;">
+    <span class="muted">Valoración: </span>
+    <strong id="rating-{{ item.video_id }}">
+        {% if item.avg_rating %}
+            {{ item.avg_rating }}/5
+        {% else %}
+            sin calificar
+        {% endif %}
+    </strong>
+</div>
 
                                 <div style="margin-left:12px;">
                                     {% if user.is_authenticated %}
+                                    <p>Promedio: <span id="avg-{{ item.video_id }}">0</span></p>
                                         <form class="rate-form" method="post" action="{% url 'rate' %}" data-video-id="{{ item.video_id }}">
                                             {% csrf_token %}
                                             <input type="hidden" name="video_id" value="{{ item.video_id }}">
@@ -110,4 +113,31 @@
     {% endif %}
     <script src="{% static 'core/js/theme.js' %}"></script>
 </body>
+<script>
+document.querySelectorAll(".rate-form").forEach(form => {
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+        let videoId = this.dataset.videoId;
+
+        fetch("{% url 'rate' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                let ratingElement = document.getElementById("rating-" + videoId);
+                if (ratingElement) {
+                    ratingElement.innerText = data.avg + "/5";
+                }
+            }
+        });
+    });
+});
+</script>
 </html>
